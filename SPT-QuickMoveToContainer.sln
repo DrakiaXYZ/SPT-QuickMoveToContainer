@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.8.34316.72
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SPT-QuickMoveToContainer", "SPT-QuickMoveToContainer.csproj", "{231C8A12-EF36-43FE-9E18-01FA0F8ED03F}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{231C8A12-EF36-43FE-9E18-01FA0F8ED03F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{231C8A12-EF36-43FE-9E18-01FA0F8ED03F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{231C8A12-EF36-43FE-9E18-01FA0F8ED03F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{231C8A12-EF36-43FE-9E18-01FA0F8ED03F}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {8CC3340A-B5CD-40D6-A686-98ED9427D2AC}
+	EndGlobalSection
+EndGlobal
