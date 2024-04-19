@@ -11,7 +11,7 @@ using System.Reflection;
 
 namespace DrakiaXYZ.QuickMoveToContainer
 {
-    [BepInPlugin("xyz.drakia.quickmovetocontainer", "DrakiaXYZ-QuickMoveToContainer", "1.0.0")]
+    [BepInPlugin("xyz.drakia.quickmovetocontainer", "DrakiaXYZ-QuickMoveToContainer", "1.0.1")]
     [BepInDependency("com.spt-aki.core", "3.8.0")]
     public class QuickMovePlugin : BaseUnityPlugin
     {
@@ -41,8 +41,14 @@ namespace DrakiaXYZ.QuickMoveToContainer
         }
 
         [PatchPrefix]
-        public static void PatchPrefix(ref IEnumerable<LootItemClass> targets)
+        public static void PatchPrefix(ref IEnumerable<LootItemClass> targets, InteractionsHandlerClass.EMoveItemOrder order)
         {
+            // If `order` doesn't have `MoveToAnotherSide` set, don't do anything
+            if (!order.HasFlag(InteractionsHandlerClass.EMoveItemOrder.MoveToAnotherSide))
+            {
+                return;
+            }
+
             // Find the currently active container
             List<LootItemClass> currentContainers = FindCurrentContainer();
             if (currentContainers.Count == 0)
