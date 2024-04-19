@@ -1,5 +1,6 @@
 ﻿using Aki.Reflection.Patching;
 using BepInEx;
+using DrakiaXYZ.QuickMoveToContainer.Helpers;
 using EFT.UI;
 using HarmonyLib;
 using System;
@@ -16,6 +17,8 @@ namespace DrakiaXYZ.QuickMoveToContainer
     {
         private void Awake()
         {
+            Settings.Init(Config);
+
             new QuickFindPatch().Enable();
         }
     }
@@ -41,40 +44,41 @@ namespace DrakiaXYZ.QuickMoveToContainer
         public static void PatchPrefix(ref IEnumerable<LootItemClass> targets)
         {
             // Find the currently active container
-            LootItemClass currentContainer = FindCurrentContainer();
-            if (currentContainer == null)
+            List<LootItemClass> currentContainers = FindCurrentContainer();
+            if (currentContainers.Count == 0)
             {
                 return;
             }
 
-            var newTargets = new List<LootItemClass>
-            {
-                currentContainer
-            };
+            var newTargets = new List<LootItemClass>();
+            newTargets.AddRange(currentContainers);
             newTargets.AddRange(targets);
 
             targets = newTargets;
         }
 
-        private static LootItemClass FindCurrentContainer()
+        private static List<LootItemClass> FindCurrentContainer()
         {
-            IList windowList = (IList)_windowListField.GetValue(ItemUiContext.Instance);
-            if (windowList.Count == 0)
-            {
-                return null;
-            }
+            var gridWindowList = new List<LootItemClass>();
 
-            for (int i = windowList.Count - 1; i >= 0; i--)
+            IList openWindowList = (IList)_windowListField.GetValue(ItemUiContext.Instance);
+            for (int i = openWindowList.Count - 1; i >= 0; i--)
             {
-                var window = _windowContainerWindowField.GetValue(windowList[i]);
+                var window = _windowContainerWindowField.GetValue(openWindowList[i]);
                 if (window.GetType() == typeof(GridWindow))
                 {
                     GridWindow gridWindow = (GridWindow)window;
-                    return _windowLootItemField.GetValue(gridWindow) as LootItemClass;
+                    gridWindowList.Add(_windowLootItemField.GetValue(gridWindow) as LootItemClass);
+
+                    // If we're only checking the topmost container, exit here
+                    if (!Settings.AllOpenContainers.Value)
+                    {
+                        break;
+                    }
                 }
             }
 
-            return null;
+            return gridWindowList;
         }
     }
 }

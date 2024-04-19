@@ -113,6 +113,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Helpers\ConfigurationManagerAttributes.cs" />
+    <Compile Include="Helpers\Settings.cs" />
     <Compile Include="QuickMovePlugin.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
