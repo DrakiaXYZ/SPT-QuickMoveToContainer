@@ -1,4 +1,4 @@
-﻿using Aki.Reflection.Patching;
+﻿using SPT.Reflection.Patching;
 using BepInEx;
 using DrakiaXYZ.QuickMoveToContainer.Helpers;
 using EFT.InventoryLogic;
@@ -12,8 +12,8 @@ using System.Reflection;
 
 namespace DrakiaXYZ.QuickMoveToContainer
 {
-    [BepInPlugin("xyz.drakia.quickmovetocontainer", "DrakiaXYZ-QuickMoveToContainer", "1.0.2")]
-    [BepInDependency("com.spt-aki.core", "3.8.0")]
+    [BepInPlugin("xyz.drakia.quickmovetocontainer", "DrakiaXYZ-QuickMoveToContainer", "1.1.0")]
+    [BepInDependency("com.SPT.core", "3.9.0")]
     public class QuickMovePlugin : BaseUnityPlugin
     {
         private void Awake()
@@ -50,7 +50,7 @@ namespace DrakiaXYZ.QuickMoveToContainer
                 return;
             }
 
-            // Find the currently active container
+            // Find the currently active containers
             var itemContainer = item.Parent.Container;
             List<LootItemClass> targetContainers = FindTargetContainers(itemContainer);
             if (targetContainers.Count == 0)
