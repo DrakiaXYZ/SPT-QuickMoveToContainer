@@ -12,8 +12,8 @@ using System.Reflection;
 
 namespace DrakiaXYZ.QuickMoveToContainer
 {
-    [BepInPlugin("xyz.drakia.quickmovetocontainer", "DrakiaXYZ-QuickMoveToContainer", "1.1.0")]
-    [BepInDependency("com.SPT.core", "3.9.0")]
+    [BepInPlugin("xyz.drakia.quickmovetocontainer", "DrakiaXYZ-QuickMoveToContainer", "1.2.0")]
+    [BepInDependency("com.SPT.core", "3.10.0")]
     public class QuickMovePlugin : BaseUnityPlugin
     {
         private void Awake()
@@ -33,7 +33,7 @@ namespace DrakiaXYZ.QuickMoveToContainer
         protected override MethodBase GetTargetMethod()
         {
             _windowListField = AccessTools.Field(typeof(ItemUiContext), "list_0");
-            _windowLootItemField = AccessTools.GetDeclaredFields(typeof(GridWindow)).Single(x => x.FieldType == typeof(LootItemClass));
+            _windowLootItemField = AccessTools.GetDeclaredFields(typeof(GridWindow)).Single(x => x.FieldType == typeof(CompoundItem));
 
             Type windowContainerType = AccessTools.FirstInner(typeof(ItemUiContext), x => x.GetField("WindowType") != null);
             _windowContainerWindowField = AccessTools.Field(windowContainerType, "Window");
@@ -42,7 +42,7 @@ namespace DrakiaXYZ.QuickMoveToContainer
         }
 
         [PatchPrefix]
-        public static void PatchPrefix(Item item, ref IEnumerable<LootItemClass> targets, InteractionsHandlerClass.EMoveItemOrder order)
+        public static void PatchPrefix(Item item, ref IEnumerable<CompoundItem> targets, InteractionsHandlerClass.EMoveItemOrder order)
         {
             // If `order` doesn't have `MoveToAnotherSide` set, don't do anything
             if (!order.HasFlag(InteractionsHandlerClass.EMoveItemOrder.MoveToAnotherSide))
@@ -52,22 +52,22 @@ namespace DrakiaXYZ.QuickMoveToContainer
 
             // Find the currently active containers
             var itemContainer = item.Parent.Container;
-            List<LootItemClass> targetContainers = FindTargetContainers(itemContainer);
+            List<CompoundItem> targetContainers = FindTargetContainers(itemContainer);
             if (targetContainers.Count == 0)
             {
                 return;
             }
 
-            var newTargets = new List<LootItemClass>();
+            var newTargets = new List<CompoundItem>();
             newTargets.AddRange(targetContainers);
             newTargets.AddRange(targets);
 
             targets = newTargets;
         }
 
-        private static List<LootItemClass> FindTargetContainers(EFT.InventoryLogic.IContainer itemContainer)
+        private static List<CompoundItem> FindTargetContainers(EFT.InventoryLogic.IContainer itemContainer)
         {
-            var gridWindowList = new List<LootItemClass>();
+            var gridWindowList = new List<CompoundItem>();
 
             IList openWindowList = (IList)_windowListField.GetValue(ItemUiContext.Instance);
             for (int i = openWindowList.Count - 1; i >= 0; i--)
@@ -76,7 +76,7 @@ namespace DrakiaXYZ.QuickMoveToContainer
                 if (window.GetType() == typeof(GridWindow))
                 {
                     GridWindow gridWindow = (GridWindow)window;
-                    LootItemClass windowLootItem = _windowLootItemField.GetValue(gridWindow) as LootItemClass;
+                    CompoundItem windowLootItem = _windowLootItemField.GetValue(gridWindow) as CompoundItem;
 
                     // Skip if the gridWindow contains the container the item is coming from
                     if (Enumerable.Contains(windowLootItem.Containers, itemContainer))
