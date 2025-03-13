@@ -10,10 +10,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 
+using GameSettingsClass = GClass1053;
+using Bsg.GameSettings;
+using System.Threading.Tasks;
+
 namespace DrakiaXYZ.QuickMoveToContainer
 {
-    [BepInPlugin("xyz.drakia.quickmovetocontainer", "DrakiaXYZ-QuickMoveToContainer", "1.2.0")]
-    [BepInDependency("com.SPT.core", "3.10.0")]
+    [BepInPlugin("xyz.drakia.quickmovetocontainer", "DrakiaXYZ-QuickMoveToContainer", "1.3.0")]
+    [BepInDependency("com.SPT.core", "3.11.0")]
     public class QuickMovePlugin : BaseUnityPlugin
     {
         private void Awake()
@@ -21,6 +25,7 @@ namespace DrakiaXYZ.QuickMoveToContainer
             Settings.Init(Config);
 
             new QuickFindPatch().Enable();
+            new DisablePriorityWindowPatch().Enable();
         }
     }
 
@@ -95,6 +100,30 @@ namespace DrakiaXYZ.QuickMoveToContainer
             }
 
             return gridWindowList;
+        }
+    }
+
+    public class DisablePriorityWindowPatch : ModulePatch
+    {
+        protected override MethodBase GetTargetMethod()
+        {
+            return typeof(GameSettingsClass).GetConstructors().First();
+        }
+
+        [PatchPostfix]
+        public static void PatchPostfix(ref GameSetting<GameSettingsClass.EPriorityWindowMode> ___PriorityWindowMode)
+        {
+            ___PriorityWindowMode = new CustomDisabledSetting<GameSettingsClass.EPriorityWindowMode>("Settings/Game/PriorityWindowMode", GameSettingsClass.EPriorityWindowMode.Disabled, null);
+        }
+
+        private class CustomDisabledSetting<T> : StateGameSetting<T>
+        {
+            public CustomDisabledSetting(string key, T defaultValue, Func<T, T> preProcessor) : base(key, defaultValue, preProcessor) { }
+
+#pragma warning disable CS1998
+            // Setting is disabled, so don't allow setting its value
+            public override async Task SetValue(T value) { }
+#pragma warning restore CS199
         }
     }
 }
